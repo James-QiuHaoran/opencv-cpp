@@ -1,3 +1,9 @@
+/* Author: James Qiu
+   Feb 10, 2018
+
+   Usage: ./stop-sign-detection /path/to/target/image /path/to/prototype/image
+*/
+
 #include <iostream>
 #include <ctime>
 #include <opencv2/core/core.hpp>
