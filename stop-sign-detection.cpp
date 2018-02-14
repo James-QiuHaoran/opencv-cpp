@@ -22,12 +22,8 @@ static double meanSquareError(const Mat &img1, const Mat &img2) {
     s1 = s1.mul(s1);           // |img1 - img2|^2
     Scalar s = sum(s1);        // sum elements per channel
     double sse = s.val[0] + s.val[1] + s.val[2];  // sum channels
-    double mme = sse / (double)(img1.channels() * img1.total());
-    return mme;
-}
-
-static double compareImages(const Mat &img1, const Mat &img2) {
-    return meanSquareError(img1, img2);
+    double mse = sse / (double)(img1.channels() * img1.total());
+    return mse;
 }
 
 int main(int argc, char** argv) {
@@ -71,7 +67,7 @@ int main(int argc, char** argv) {
                 window = targetImage(R); // crop the region of interest using above rectangle
                 if (window.rows != tmpImg.rows || window.cols != tmpImg.cols)
                     continue;
-                double tempSim = compareImages(tmpImg, window);
+                double tempSim = meanSquareError(tmpImg, window);
                 if (tempSim < maxSim) {
                     maxSim = tempSim;
                     maxBox[0] = x;
