@@ -15,6 +15,14 @@ The following steps show how to run this program in Eclipse.
 3. Build the project and a binary file will be created in the project directory.
 4. Enter the directory consisting the binary file (stop-sign-detection). Execute `./stop-sign-detection /path/to/target/image /path/to/prototype/image` and the output image will show up in a while.
 
+In case you want to test the correctness of this program, you could download the data set which contains 100 pictures with stop signs and 100 pictures without stop signs. Execute the following one line command in terminal:
+
+```
+for i in {1..200}; do ./stop-sign-detection dataset/$i.jpg stopPrototype.png; done
+```
+
+After execution, the execution time, minimum MSE, and the detection result will be printed in the terminal. If found, a rectangle will be draw in the image, otherwise, "Stop sign not found!" will be printed.
+
 ## How It Works?
 
 ```
@@ -30,7 +38,7 @@ static double meanSquareError(const Mat &img1, const Mat &img2) {
 }
 ```
 
-This function takes two images in `Mat` format and computes the mean square error of the two. Simply speaking, it represents the difference between two images. The lower the `mse`, the more similar the first image is compared to the second.
+This function takes two images in `Mat` format and computes the mean square error of the two. Simply speaking, it represents the difference between two images. The lower the `mse`, the more similar the first image is compared to the second. We keep a threshold to distinguish images with a stop-sign and without any stop sign.
 
 - `absdiff(Mat img1, Mat img2, Mat dest)` in opencv2/core.hpp library computes the per-element absolute difference between two Mat arrays. See documentation [here](https://docs.opencv.org/java/2.4.9/org/opencv/core/Core.html#absdiff(org.opencv.core.Mat,%20org.opencv.core.Mat,%20org.opencv.core.Mat)).
 - `convertTo(Mat img, int rtype)` converts an array to another type. By default, the type of Mat would be CV_8U (unsigned 8bit/pixel - i.e. a pixel can have values 0-255, this is the normal range for most image and video formats). However, we cannot multiply on one byte large values. Thus we need to convert to type CV_32F (the pixel can have any value between 0-1.0, this is useful for some sets of calculations on data, e.g. multiplication).
@@ -44,32 +52,27 @@ This function takes two images in `Mat` format and computes the mean square erro
     resize(targetImage, targetImage, Size(width, height));
 ```
 
-After get the prototype image and the target image, we first resize the target image to have width 500.
+After get the prototype image and the target image, we first resize the target image to have width 500 in order to relax our computation.
 
 ```
-    int maxSim = 50000;
-    int maxBox[4] = {0, 0, 0, 0};
+    int minMSE = INT_MAX;
+    int location[4] = {0, 0, 0, 0};
 ```
 
-We first initialize the maximum similarity to be 50000 (large enough). Then we iteratively resize the "tmpImg" to be prototype image in descending size with scale 1.5. In each iteration, we take a embedded loop to search the cropped region of target image, updating the location with maximum similarity with the prototype image.
+We first initialize the minimum MSE to be `INT_MAX`. Then we iteratively resize the "tmpImg" to be prototype image in descending size with scale 1.3. In each iteration, we take a embedded loop to search the cropped region of target image, updating the location with maximum similarity with the prototype image.
 
 ```
-    Mat tmpImg;
+    Mat tmpImg = prototypeImg.clone();
     Mat window;
-    for (int wsize = prototypeImg.cols; wsize > 50; wsize /= 1.5) {
-        if (wsize == prototypeImg.cols) {
-            tmpImg = prototypeImg.clone();
-        } else {
-            width /= 1.5;
-            height = width;
-            resize(tmpImg, tmpImg, Size(width, height));
-        }
-        if (tmpImg.rows < 50 || tmpImg.cols < 50)
+    for (int wsize = prototypeImg.cols; wsize > 15; wsize /= 1.3) {
+        if (tmpImg.rows < 15 || tmpImg.cols < 15)
             break;
-        if (tmpImg.rows > 1000 || tmpImg.cols > 1000)
+        if (tmpImg.rows > 9000 || tmpImg.cols > 9000) {
+            resize(tmpImg, tmpImg, Size(wsize, wsize)); 
             continue;
-        for (int y = 0; y < targetImage.rows; y += 2) {
-            for (int x = 0; x < targetImage.cols; x += 2) {
+        }
+        for (int y = 0; y < targetImage.rows; y += 5) {
+            for (int x = 0; x < targetImage.cols; x += 5) {
             	if (x + tmpImg.cols > targetImage.cols || y + tmpImg.cols > targetImage.rows)
             	    continue;
                 Rect R(x, y, tmpImg.cols, tmpImg.cols); // create a rectangle
@@ -77,22 +80,23 @@ We first initialize the maximum similarity to be 50000 (large enough). Then we i
                 if (window.rows != tmpImg.rows || window.cols != tmpImg.cols)
                     continue;
                 double tempSim = meanSquareError(tmpImg, window);
-                if (tempSim < maxSim) {
-                    maxSim = tempSim;
-                    maxBox[0] = x;
-                    maxBox[1] = y;
-                    maxBox[2] = tmpImg.rows;
-                    maxBox[3] = tmpImg.cols;
+                if (tempSim < minMSE) {
+                    minMSE = tempSim;
+                    location[0] = x;
+                    location[1] = y;
+                    location[2] = tmpImg.rows;
+                    location[3] = tmpImg.cols;
                 }
             }
         }
+        resize(tmpImg, tmpImg, Size(wsize, wsize));
     }
 ```
 
 After get the location of the stop sign, we draw a rectangle to mark it. Here, `x` and `y` stand for the location of the point at left-top corner, `w` and `h` represent width and height respectively.
 
 ```
-    int buff1 = 10;
+    int buff1 = 50;
     int x = maxBox[0];
     int y = maxBox[1];
     int w = maxBox[2];
