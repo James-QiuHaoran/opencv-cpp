@@ -32,6 +32,11 @@ static double meanSquareError(const Mat &img1, const Mat &img2) {
 
 This function takes two images in `Mat` format and computes the mean square error of the two. Simply speaking, it represents the difference between two images. The lower the `mse`, the more similar the first image is compared to the second.
 
+- `absdiff(Mat img1, Mat img2, Mat dest)` in opencv2/core.hpp library computes the per-element absolute difference between two Mat arrays. See documentation [here](https://docs.opencv.org/java/2.4.9/org/opencv/core/Core.html#absdiff(org.opencv.core.Mat,%20org.opencv.core.Mat,%20org.opencv.core.Mat)).
+- `convertTo(Mat img, int rtype)` converts an array to another type. By default, the type of Mat would be CV_8U (unsigned 8bit/pixel - i.e. a pixel can have values 0-255, this is the normal range for most image and video formats). However, we cannot multiply on one byte large values. Thus we need to convert to type CV_32F (the pixel can have any value between 0-1.0, this is useful for some sets of calculations on data, e.g. multiplication).
+- `Mat::mul(Mat img)` gives us the per-element product of two array and `sum(Mat img)` gives us the summation of all the elements respective to three channels. 
+- Mean square error will be the summation of square difference in three channels divided by the number of pixels in three channels.
+
 ```
     // resize the image
     int width = 500;
