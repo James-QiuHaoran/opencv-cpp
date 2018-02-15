@@ -43,7 +43,6 @@ int main(int argc, char** argv) {
     // start time
     int t0 = clock();
 
-    bool stop_sign_found = false;
     Mat tmpImg = prototypeImg.clone();
     Mat window;
     cout << tmpImg.rows << " " << tmpImg.cols << endl;

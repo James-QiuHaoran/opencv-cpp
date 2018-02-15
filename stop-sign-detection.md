@@ -107,3 +107,14 @@ After get the location of the stop sign, we draw a rectangle to mark it. Here, `
     // show the image
     imshow("image", targetImage);
 ```
+
+## Tuning Parameters
+
+There are several critical parameters in this program detecting stop signs:
+
+- `THRESHOLD` - given the algorithm runs well, this parameter should be the threshold of distinguishing images with stop signs and images without stop signs. It can be set after we run a huge amount of tests and choose a suitable value that do not yield much precision.
+- The descending scale - it determines the execution time. The larger the scale is, the faster the program runs but the result would not be good if scale is larger than some value.
+- The minimum pyramid value - it determines when the for-loop generating pyramids of prototype image will stop. Similar to the descending scale, it should be cautiously chosen by tuning with the test results.
+- Iterative step of searching match in the target image - similar to descending scale, the result will be worse if step is too large but if step is too small the program will take a lot of time.
+
+It's believed that these parameters should be tuned with the help of machine learning and large amounts of test cases. Currently the program will give a decision in about 1-2 seconds with correct rate around 70%.
