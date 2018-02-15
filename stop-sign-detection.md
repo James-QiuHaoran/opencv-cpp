@@ -18,7 +18,7 @@ The following steps show how to run this program in Eclipse.
 In case you want to test the correctness of this program, you could download the data set which contains 100 pictures with stop signs and 100 pictures without stop signs. Execute the following one line command in terminal:
 
 ```
-for i in {1..200}; do ./stop-sign-detection dataset/$i.jpg stopPrototype.png; done
+for i in {1..200}; do ./stop-sign-detection stop_sign_dataset/$i.jpg stop_sign_prototype.png; done
 ```
 
 After execution, the execution time, minimum MSE, and the detection result will be printed in the terminal. If found, a rectangle will be draw in the image, otherwise, "Stop sign not found!" will be printed.
