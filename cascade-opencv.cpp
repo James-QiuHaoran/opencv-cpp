@@ -70,41 +70,19 @@ void draw_locations(Mat & img, vector< Rect > &locations, const Scalar & color, 
     Mat img1, car, carMask ,carMaskInv,car1;
     img.copyTo(img1);
 
-	if (!locations.empty()) {
-		// double distance;
+    if (!locations.empty()) {
+        // double distance;
         for(size_t i = 0 ; i < locations.size(); ++i) {
-//            if (text == "Car") {
-//                car = imread(CAR_IMAGE);
-//                carMask = car.clone();
-//                cvtColor(carMask, carMask, CV_BGR2GRAY);
-//                locations[i].y = locations[i].y + img.rows/2; // shift the bounding box
-//                distance = (0.0397*2)/((locations[i].width)*0.00007);// 2 is avg. width of the car
-//                Size size(locations[i].width/1.5, locations[i].height/3);
-//                resize(car,car,size, INTER_NEAREST);
-//                resize(carMask,carMask,size, INTER_NEAREST);
-//                Mat roi = img.rowRange(locations[i].y-size.height, (locations[i].y+locations[i].height/3)-size.height).colRange(locations[i].x, (locations[i].x  +locations[i].width/1.5));
-//                bitwise_and(car, roi, car);
-//                car.setTo(color, carMask);
-//                add(roi,car,car);
-//                car.copyTo(img1.rowRange(locations[i].y-size.height, (locations[i].y+locations[i].height/3)-size.height).colRange(locations[i].x, (locations[i].x  +locations[i].width/1.5)));
-//            } else if(text == "Pedestrian") {
-//                distance = (0.0397*0.5)/((locations[i].width)*0.00007);  //0.5 is avg. width of a person
-//            } else if(text=="Stop Sign") {
-//                distance = (0.0397*0.75)/((locations[i].width)*0.00007); //0.75 is avg. width of the stop sign
-//            } else if ((text == "Traffic Light")) {
-//            	distance = (0.0397*0.5)/((locations[i].width)*0.00007);
-//            }
             rectangle(img, locations[i], color, -1);
         }
         addWeighted(img1, 0.8, img, 0.2, 0, img);
 
-        for(size_t i = 0 ; i < locations.size() ; ++i){
+        for(size_t i = 0 ; i < locations.size() ; ++i) {
             rectangle(img, locations[i], color, 3);
             putText(img, text, Point(locations[i].x+1, locations[i].y+8), FONT_HERSHEY_DUPLEX, 0.3, color, 1);
-            // putText(img, dis, Point(locations[i].x, locations[i].y+locations[i].height-5), FONT_HERSHEY_DUPLEX, 0.3, Scalar(255, 255, 255), 1);
             if (text == "Car") {
                 locations[i].y = locations[i].y - img.rows/2; // shift the bounding box
             }
         }
-	}
+    }
 }
