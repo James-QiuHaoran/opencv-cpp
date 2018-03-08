@@ -8,11 +8,12 @@
 #ifndef SRC_GEOMETRY_H_
 #define SRC_GEOMETRY_H_
 
-namespace GEOMETRY {
+#include "utility.h"
 
-  bool isInside(vector<Point> polygon, Point p);
-
+namespace Geometry {
+    bool isInside(vector<Point> polygon, Point p);
+    bool hasOverlap(vector<Point> polygon1, vector<Point> polygon2);
+    vector<Point> convexHull(vector<Point> points); 
 }
-
 
 #endif /* SRC_GEOMETRY_H_ */
