@@ -1,0 +1,6 @@
+ # check if it is running
+ $ ps aux | grep remote_control
+
+lkang    26344  1.0  0.3 455188 30088 pts/24   Sl+  17:22   0:00 ./remote_control
+
+ $ kill 26344
